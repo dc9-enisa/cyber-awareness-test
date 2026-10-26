@@ -1,0 +1,28 @@
+/* Wygenerowano z design/design-tokens.json – nie edytuj ręcznie */
+:root{
+  --c-primary: #003399;
+  --c-primary-strong: #00266F;
+  --c-accent: #003399;
+  --c-accent-text: #003399;
+  --c-accent-light: #EDF1F6;
+  --c-on-dark-accent: #C6D8FF;
+  --c-background: #F5F7FA;
+  --c-surface: #FFFFFF;
+  --c-panel: #EDF1F6;
+  --c-text: #172334;
+  --c-text-muted: #536172;
+  --c-line: #D6DDE6;
+  --c-warning: #CB0538;
+  --c-warning-light: #FBE3E9;
+  --c-error: #B3261E;
+  --c-error-light: #FCEDEC;
+  --c-info: #003399;
+  --c-info-light: #E6ECF8;
+  --c-focus: #B96A08;
+  --c-success: #12654C;
+  --c-success-light: #E3F1EC;
+  --font: "Schibsted Grotesk", Arial, "Liberation Sans", Arimo, Helvetica, sans-serif;
+  --font-mono: Consolas, "Liberation Mono", Menlo, monospace;
+  --radius: 12px;
+  --radius-s: 10px;
+}

@@ -1,0 +1,17 @@
+{{template "head" .}}
+<section class="panel">
+ <h1>Weryfikacja zaświadczenia</h1>
+ <form method="get" action="/weryfikacja" class="form inline">
+  <label>Numer zaświadczenia <input name="numer" value="{{.Query}}" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false"></label>
+  <button class="btn btn-primary" type="submit">Sprawdź</button>
+ </form>
+ {{if .Checked}}{{with .Rec}}
+ <div class="note-ok" role="status">
+  <p class="verdict">✓ Zaświadczenie jest prawdziwe.</p>
+  <p><strong>{{.Name}}</strong> · test końcowy {{date .Finished}} · wynik {{.Correct}} z {{.Total}} · numer <span class="mono">{{.CertID}}</span></p>
+ </div>
+ {{else}}
+ <div class="alert" role="alert"><p><strong>Nie znaleziono zaświadczenia o tym numerze.</strong> Sprawdź pisownię. Zaświadczenia starsze niż okres przechowywania wyników mogły zostać usunięte.</p></div>
+ {{end}}{{end}}
+</section>
+{{template "foot" .}}

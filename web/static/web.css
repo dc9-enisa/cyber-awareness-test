@@ -1,0 +1,49 @@
+/* Uzupełnienia wersji webowej: krój z paczki, pasek użytkownika, tabele, raport, formularze. */
+@font-face{font-family:"Schibsted Grotesk";src:url(fonts/SchibstedGrotesk-Regular.ttf) format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:"Schibsted Grotesk";src:url(fonts/SchibstedGrotesk-Bold.ttf) format("truetype");font-weight:700;font-display:swap}
+.wrap{max-width:1040px}
+.topbar{border-bottom-color:var(--c-warning)}
+.logo small{color:var(--c-on-dark-accent)}
+.topbar-in{gap:16px;flex-wrap:wrap;padding:8px 0}
+.who{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.who form{margin:0}
+.who-name{font-size:14px;color:var(--c-on-dark-accent)}
+.topbar .btn-quiet{color:#fff;border-color:rgba(255,255,255,.45)}
+.topbar .btn-quiet:hover{background:rgba(255,255,255,.12)}
+.devbar{background:var(--c-warning-light);color:var(--c-warning);font-weight:700;font-size:14px;padding:8px 20px;margin:0 auto}
+/* znaki jak w stopce kursu: ENISA na białym polu z wolną przestrzenią, znak UE nie mniejszy niż ENISA */
+.marks{display:flex;align-items:center;background:#fff;width:100%}
+.marks .safe{display:block;background:#fff;padding:14px;line-height:0}
+.enisa-mark{display:block;height:36px;width:auto}
+.marks .sep{width:1px;height:40px;background:#B9C3D0;margin:0 22px 0 6px}
+.eu-mark{display:block;height:47px;width:auto}
+.mono{font-family:var(--font-mono);overflow-wrap:anywhere}
+.cert-box{border-left:6px solid var(--c-success)}
+.ok{color:var(--c-success)}
+.note-ok{background:var(--c-success-light);color:var(--c-text);padding:14px 18px;border-radius:10px;margin-top:16px}
+.note-ok .verdict{color:var(--c-success)}
+.table-wrap{overflow-x:auto}
+table.data{border-collapse:collapse;width:100%;font-size:15px}
+table.data th,table.data td{text-align:left;vertical-align:top;padding:10px 12px;border-top:1px solid var(--c-line)}
+table.data thead th{background:var(--c-primary);color:#fff;border-top:0;font-size:14px}
+table.data tbody tr:nth-child(even){background:var(--c-panel)}
+table.data tbody th{font-weight:700;color:var(--c-text)}
+.kpis{list-style:none;padding:0;margin:0 0 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpis li{background:var(--c-surface);border:1px solid var(--c-line);border-radius:10px;padding:14px 16px;color:var(--c-text-muted)}
+.kpis strong{display:block;font-size:30px;line-height:1.1;color:var(--c-primary)}
+.form{display:grid;gap:14px;max-width:460px}
+.form.inline{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;max-width:none;margin:0 0 16px}
+.form label{display:grid;gap:4px;font-weight:700;font-size:15px}
+.form label.check{display:flex;gap:8px;align-items:center;font-weight:400}
+.form input:not([type=checkbox]){font:inherit;padding:10px 12px;border:2px solid var(--c-line);border-radius:8px;min-width:240px;max-width:100%}
+.form input:focus-visible{border-color:var(--c-primary)}
+.prose h2{margin-top:22px}
+.prose li{margin:4px 0}
+@media (max-width:640px){
+ table.data thead{display:none}
+ table.data tr{display:block;border-top:2px solid var(--c-line);padding:6px 0}
+ table.data td,table.data tbody th{display:block;border:0;padding:3px 12px}
+ table.data td::before,table.data tbody th::before{content:attr(data-label);display:block;font-size:12px;font-weight:700;color:var(--c-text-muted)}
+ .form input:not([type=checkbox]){min-width:0;width:100%}
+}
+.footer p{display:block}

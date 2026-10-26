@@ -1,0 +1,19 @@
+{{template "head" .}}
+<section class="panel prose">
+ <h1>Informacja o przetwarzaniu danych</h1>
+ <p>Aplikację udostępnia {{.Org}}. Logujesz się kontem służbowym Microsoft Entra ID organizacji.</p>
+ <h2>Jakie dane są zapisywane</h2>
+ <ul>
+  <li>identyfikator konta w Entra ID, imię i nazwisko oraz login (adres e-mail) z Twojego konta,</li>
+  <li>dla każdej oddanej próby: część testu, data i godzina, liczba punktów ogółem i w każdym module, informacja o zaliczeniu i błędach w pytaniach KLUCZOWYCH,</li>
+  <li>numer zaświadczenia uczestnictwa, jeśli zostało wydane.</li>
+ </ul>
+ <p>Nie są zapisywane treści Twoich odpowiedzi. Odpowiedzi w trakcie próby serwer trzyma tylko w pamięci do chwili oddania testu.</p>
+ <h2>Kto ma dostęp</h2>
+ <p>Ty widzisz swoje wyniki i zaświadczenia. Pełny raport i eksport wyników widzą osoby, którym organizacja przypisała rolę administratora aplikacji. Zalogowany pracownik organizacji może sprawdzić, czy zaświadczenie o podanym numerze jest prawdziwe – zobaczy wtedy imię i nazwisko, datę i wynik.</p>
+ <h2>Jak długo</h2>
+ <p>{{if .Retention}}Wyniki są automatycznie usuwane po {{.Retention}} dniach od oddania testu.{{else}}Okres przechowywania ustala organizacja.{{end}}</p>
+ <p>Ciasteczka służą wyłącznie do logowania i ochrony formularzy (sesja do 8 godzin). Aplikacja nie używa narzędzi analitycznych ani reklamowych.</p>
+ {{with .PrivacyText}}<h2>Administrator danych i kontakt</h2><p>{{.}}</p>{{end}}
+</section>
+{{template "foot" .}}

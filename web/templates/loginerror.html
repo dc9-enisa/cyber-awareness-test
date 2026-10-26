@@ -1,0 +1,8 @@
+{{template "head" .}}
+<section class="panel center-text">
+ <h1>Logowanie nieudane</h1>
+ <p>{{.Msg}}</p>
+ <p class="muted small">Jeśli problem się powtarza, zgłoś go administratorowi aplikacji. Dostęp mają tylko konta organizacji, którym przypisano aplikację.</p>
+ <a class="btn btn-primary" href="/auth/login">Zaloguj się ponownie</a>
+</section>
+{{template "foot" .}}

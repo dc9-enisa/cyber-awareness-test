@@ -1,0 +1,339 @@
+{
+ "version": "demo",
+ "funding": "Sfinansowane ze środków Unii Europejskiej",
+ "threshold": 4,
+ "modules": [
+  {
+   "code": "M1",
+   "title": "Phishing i socjotechnika",
+   "first_slide": 5,
+   "last_slide": 16,
+   "goal": "Ocenisz prośbę z e-maila, SMS-a, komunikatora lub kodu QR i wybierzesz sposób jej sprawdzenia.",
+   "items": [
+    "jak działa socjotechnika (manipulacja) i na co patrzeć w wiadomości",
+    "skąd oszust wie tyle o Tobie",
+    "jak sprawdzić prośbę innym kanałem"
+   ]
+  },
+  {
+   "code": "M2",
+   "title": "Konta, hasła i MFA",
+   "first_slide": 17,
+   "last_slide": 25,
+   "goal": "Zabezpieczysz konto hasłem i dodatkowym składnikiem logowania (MFA) oraz zareagujesz na obce logowanie.",
+   "items": [
+    "hasła, menedżer haseł i metody MFA",
+    "nieoczekiwane powiadomienie MFA, klucze dostępu",
+    "prywatna poczta a sprawy służbowe"
+   ]
+  },
+  {
+   "code": "M3",
+   "title": "Informacje i współpraca",
+   "first_slide": 26,
+   "last_slide": 35,
+   "goal": "Dobierzesz odbiorców i uprawnienia, usuniesz ukryte dane z dokumentu i ochronisz dane w codziennej pracy.",
+   "items": [
+    "odbiorcy, załączniki i udostępnianie",
+    "jakie informacje wymagają ochrony",
+    "ukryte dane i zaczernianie"
+   ]
+  },
+  {
+   "code": "M4",
+   "title": "Urządzenia, pliki i szkodliwe oprogramowanie",
+   "first_slide": 36,
+   "last_slide": 43,
+   "goal": "Rozpoznasz ryzykowny plik lub instalację, skorzystasz z zatwierdzonych aktualizacji i będziesz przechowywać dokumenty tak, by dało się je odtworzyć.",
+   "items": [
+    "ryzykowne pliki, instalacje i aktualizacje",
+    "ochrona dokumentów przed utratą",
+    "usuwanie danych i zwrot sprzętu"
+   ]
+  },
+  {
+   "code": "M5",
+   "title": "Praca zdalna, mobilna i w biurze",
+   "first_slide": 44,
+   "last_slide": 51,
+   "goal": "Ochronisz urządzenie, ekran, dokumenty i rozmowy oraz będziesz łączyć się tylko w sposób zatwierdzony przez organizację.",
+   "items": [
+    "ochrona urządzenia",
+    "praca w podróży i w domu",
+    "porządek w biurze i wejście do budynku",
+    "sieć domowa i wideorozmowy"
+   ]
+  },
+  {
+   "code": "M6",
+   "title": "Płatności i podszywanie się",
+   "first_slide": 52,
+   "last_slide": 59,
+   "goal": "Niezależnie zweryfikujesz zmianę rachunku, pilne polecenie przełożonego i telefon od rzekomego wsparcia.",
+   "items": [
+    "zmiana rachunku i prawdziwe przypadki",
+    "„pilny przelew” od przełożonego",
+    "fałszywe wsparcie techniczne",
+    "podrobiony głos i obraz"
+   ]
+  },
+  {
+   "code": "M7",
+   "title": "Bezpieczne korzystanie z AI i usług zewnętrznych",
+   "first_slide": 60,
+   "last_slide": 66,
+   "goal": "Rozpoznasz dane, których nie wolno wprowadzać do niezatwierdzonego narzędzia, sprawdzisz wynik i nie dasz aplikacji pochopnie dostępu do poczty lub plików.",
+   "items": [
+    "jakie dane nie trafiają do narzędzia AI",
+    "sprawdzanie wyników",
+    "zgody dla aplikacji na dostęp do konta"
+   ]
+  },
+  {
+   "code": "M8",
+   "title": "Podejrzenie incydentu i szybkie zgłoszenie",
+   "first_slide": 67,
+   "last_slide": 76,
+   "goal": "Wybierzesz pierwszy bezpieczny krok i przygotujesz użyteczne zgłoszenie podejrzanego zdarzenia.",
+   "items": [
+    "co jest incydentem i dlaczego czas ma znaczenie",
+    "pierwszy krok zależny od zdarzenia",
+    "czego nie robić samodzielnie",
+    "jak napisać dobre zgłoszenie"
+   ]
+  },
+  {
+   "code": "M9",
+   "title": "Ransomware: zaszyfrowane pliki i żądanie okupu",
+   "first_slide": 77,
+   "last_slide": 84,
+   "goal": "Rozpoznasz atak ransomware, wykonasz pierwsze kroki bez niszczenia śladów i będziesz przechowywać dokumenty tak, by dało się je odtworzyć.",
+   "items": [
+    "jak działa ransomware i jak trafia do organizacji",
+    "objawy na ekranie",
+    "pierwsze minuty po ataku",
+    "kopie zapasowe i zabezpieczenia"
+   ]
+  },
+  {
+   "code": "M10",
+   "title": "Wi-Fi i połączenia poza biurem",
+   "first_slide": 85,
+   "last_slide": 92,
+   "goal": "Rozpoznasz fałszywą sieć Wi-Fi i stronę wyłudzającą dane logowania oraz połączysz się w sposób wskazany przez organizację.",
+   "items": [
+    "ryzyko publicznego Wi-Fi",
+    "podobne nazwy sieci i strona logowania do sieci",
+    "VPN, internet z telefonu i ustawienia urządzenia",
+    "przypadek fałszywych sieci na lotniskach"
+   ]
+  },
+  {
+   "code": "M11",
+   "title": "Deepfake: podrobiony głos i obraz",
+   "first_slide": 93,
+   "last_slide": 101,
+   "goal": "Rozpoznasz próby oszustwa z użyciem podrobionego głosu lub obrazu i rozstrzygniesz wątpliwość procedurą, a nie oceną wyglądu.",
+   "items": [
+    "formy deepfake w oszustwach",
+    "przypadek wideorozmowy z fałszywym dyrektorem",
+    "sygnały ostrzegawcze i procedura",
+    "wiadomość głosowa od „przełożonego”"
+   ]
+  }
+ ],
+ "parts": [
+  {
+   "id": "A",
+   "title": "Diagnoza wstępna (przykład)",
+   "minutes": 3,
+   "when": "przed modułem M1",
+   "questions": [
+    {
+     "id": "DEMO-A1",
+     "module": "M1",
+     "kind": "scenariusz",
+     "critical": false,
+     "stem": "PRZYKŁAD. Dostajesz e-mail „od działu IT” z prośbą o zalogowanie się przez link w ciągu godziny. Co robisz?",
+     "options": [
+      "Klikam, bo nadawca podpisał się jako dział IT.",
+      "Nie klikam. Sprawdzam prośbę w dziale IT znanym kanałem.",
+      "Odpowiadam na e-mail z pytaniem, czy to prawda.",
+      "Przesyłam wiadomość znajomym z pytaniem, co o niej sądzą."
+     ],
+     "key": "B",
+     "why": [
+      "Podpis można wpisać dowolnie.",
+      "Własny, znany kanał pozwala sprawdzić prośbę.",
+      "Odpowiedź trafi do nadawcy, który może być oszustem.",
+      "Rozsyłanie wiadomości zwiększa ryzyko."
+     ],
+     "review_slide": 1,
+     "review_title": "Pytanie przykładowe"
+    },
+    {
+     "id": "DEMO-A2",
+     "module": "M2",
+     "kind": "scenariusz",
+     "critical": false,
+     "stem": "PRZYKŁAD. Telefon pokazuje prośbę o zatwierdzenie logowania, którego nie wykonujesz. Co robisz?",
+     "options": [
+      "Zatwierdzam, żeby powiadomienie zniknęło.",
+      "Ignoruję i nic nie robię.",
+      "Odrzucam i zgłaszam to zgodnie z procedurą organizacji.",
+      "Zatwierdzam i od razu zmieniam hasło."
+     ],
+     "key": "C",
+     "why": [
+      "Zatwierdzenie wpuszcza osobę, która zna Twoje hasło.",
+      "Bez zgłoszenia nikt nie zareaguje na możliwe przejęcie hasła.",
+      "Odrzucenie blokuje logowanie, a zgłoszenie pozwala zareagować.",
+      "Zatwierdzenie już daje dostęp; zmiana hasła może być spóźniona."
+     ],
+     "review_slide": 1,
+     "review_title": "Pytanie przykładowe"
+    },
+    {
+     "id": "DEMO-A3",
+     "module": "M8",
+     "kind": "scenariusz",
+     "critical": false,
+     "stem": "PRZYKŁAD. Po kliknięciu linku w podejrzanej wiadomości zastanawiasz się, co dalej. Co jest najważniejsze?",
+     "options": [
+      "Szybko zgłosić zdarzenie, nawet jeśli nic się nie stało.",
+      "Poczekać, czy pojawią się problemy.",
+      "Usunąć wiadomość i nikomu nie mówić.",
+      "Wyłączyć komputer na kilka dni."
+     ],
+     "key": "A",
+     "why": [
+      "Szybkie zgłoszenie skraca czas reakcji.",
+      "Czekanie daje czas atakującemu.",
+      "Usunięcie zaciera ślady potrzebne do oceny.",
+      "Długie wyłączenie nie zastępuje zgłoszenia."
+     ],
+     "review_slide": 1,
+     "review_title": "Pytanie przykładowe"
+    }
+   ]
+  },
+  {
+   "id": "B",
+   "title": "Test końcowy (przykład)",
+   "minutes": 5,
+   "when": "po module M11",
+   "questions": [
+    {
+     "id": "DEMO-B1",
+     "module": "M1",
+     "kind": "scenariusz",
+     "critical": false,
+     "stem": "PRZYKŁAD. SMS od „kuriera” prosi o dopłatę 2 zł przez link. Co robisz?",
+     "options": [
+      "Płacę, bo kwota jest niska.",
+      "Klikam, ale nie podaję danych karty.",
+      "Odpisuję z pytaniem o numer przesyłki.",
+      "Nie klikam. Sprawdzam przesyłkę w aplikacji przewoźnika."
+     ],
+     "key": "D",
+     "why": [
+      "Niska kwota służy wyłudzeniu danych karty.",
+      "Samo otwarcie strony może prowadzić do dalszych prób oszustwa.",
+      "Odpowiedź potwierdza, że numer jest aktywny.",
+      "Znane źródło pozwala sprawdzić informację."
+     ],
+     "review_slide": 1,
+     "review_title": "Pytanie przykładowe"
+    },
+    {
+     "id": "DEMO-B2",
+     "module": "M2",
+     "kind": "scenariusz",
+     "critical": true,
+     "stem": "PRZYKŁAD. Ktoś dzwoni „z banku” i prosi o kod z SMS-a. Co robisz?",
+     "options": [
+      "Podaję kod, bo rozmówca zna moje imię.",
+      "Nie podaję kodu i rozłączam się.",
+      "Podaję tylko część kodu.",
+      "Proszę o oddzwonienie za godzinę."
+     ],
+     "key": "B",
+     "why": [
+      "Znajomość imienia niczego nie potwierdza.",
+      "Kodu nie podaje się nikomu, także pracownikowi banku.",
+      "Część kodu też może wystarczyć.",
+      "Oddzwonienie na ten sam numer nadal łączy z oszustem."
+     ],
+     "review_slide": 1,
+     "review_title": "Pytanie przykładowe"
+    },
+    {
+     "id": "DEMO-B3",
+     "module": "M6",
+     "kind": "scenariusz",
+     "critical": true,
+     "stem": "PRZYKŁAD. Kontrahent pisze, że zmienił numer konta, i prosi o pilny przelew na nowy. Co robisz?",
+     "options": [
+      "Potwierdzam zmianę telefonicznie na numer znany z wcześniejszej współpracy.",
+      "Robię przelew, bo e-mail przyszedł z adresu kontrahenta.",
+      "Odpisuję na ten e-mail z prośbą o potwierdzenie.",
+      "Robię przelew na połowę kwoty."
+     ],
+     "key": "A",
+     "why": [
+      "Znany kanał pozwala potwierdzić zmianę.",
+      "Skrzynka kontrahenta mogła zostać przejęta.",
+      "Odpowiedź może trafić do oszusta.",
+      "Część kwoty to nadal strata."
+     ],
+     "review_slide": 1,
+     "review_title": "Pytanie przykładowe"
+    },
+    {
+     "id": "DEMO-B4",
+     "module": "M10",
+     "kind": "scenariusz",
+     "critical": false,
+     "stem": "PRZYKŁAD. W hotelu widzisz dwie sieci o niemal identycznej nazwie. Strona logowania prosi o hasło do poczty. Co robisz?",
+     "options": [
+      "Podaję hasło, bo tak działa hotelowe Wi-Fi.",
+      "Wybieram drugą sieć i podaję hasło tam.",
+      "Nie podaję hasła i pytam w recepcji o właściwą sieć.",
+      "Podaję hasło i zmieniam je po powrocie."
+     ],
+     "key": "C",
+     "why": [
+      "Hotelowe Wi-Fi nie potrzebuje hasła do poczty.",
+      "Druga sieć też może być fałszywa.",
+      "Obsługa wskaże prawdziwą sieć; hasło do poczty nie jest potrzebne.",
+      "Do czasu zmiany hasło może zostać wykorzystane."
+     ],
+     "review_slide": 1,
+     "review_title": "Pytanie przykładowe"
+    },
+    {
+     "id": "DEMO-B5",
+     "module": "M8",
+     "kind": "scenariusz",
+     "critical": false,
+     "stem": "PRZYKŁAD. Na ekranie pojawia się komunikat o zaszyfrowaniu plików. Co robisz najpierw?",
+     "options": [
+      "Płacę okup, żeby szybko odzyskać pliki.",
+      "Odłączam komputer od sieci i zgłaszam zdarzenie.",
+      "Restartuję komputer kilka razy.",
+      "Kopiuję pliki na pendrive."
+     ],
+     "key": "B",
+     "why": [
+      "Zapłata nie gwarantuje odzyskania plików.",
+      "Odłączenie ogranicza rozprzestrzenianie, zgłoszenie uruchamia reakcję.",
+      "Restart może utrudnić analizę.",
+      "Kopia może przenieść złośliwe oprogramowanie."
+     ],
+     "review_slide": 1,
+     "review_title": "Pytanie przykładowe"
+    }
+   ]
+  }
+ ]
+}

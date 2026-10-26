@@ -1,0 +1,69 @@
+{{template "head" .}}
+{{$r := .Result}}
+<section class="score {{if $r.IsFinal}}{{if $r.MeetsTarget}}is-ok{{else}}is-warn{{end}}{{end}}">
+ <svg class="ring" viewBox="0 0 120 120" role="img" aria-label="Wynik {{$r.Correct}} z {{$r.Total}}">
+  <circle cx="60" cy="60" r="52" class="ring-track"/>
+  <circle cx="60" cy="60" r="52" class="ring-fill" stroke-dasharray="{{arc $r.Correct $r.Total}}" transform="rotate(-90 60 60)"/>
+  <text x="60" y="58" text-anchor="middle" class="ring-num">{{$r.Correct}}/{{$r.Total}}</text>
+  <text x="60" y="78" text-anchor="middle" class="ring-pct">{{$r.Percent}}%</text>
+ </svg>
+ <div>
+  <p class="eyebrow">Część {{$r.Part.ID}} · wynik</p>
+  <h1>{{$r.Part.Title}}</h1>
+  {{if $r.IsFinal}}
+   {{if $r.MeetsTarget}}<p class="verdict">✓ Osiągnięto zalecany wynik (co najmniej {{$r.Threshold}} z {{$r.Total}}).</p>
+   {{else}}<p class="verdict">Wynik poniżej zalecanego ({{$r.Threshold}} z {{$r.Total}}). Powtórz wskazane moduły i spróbuj ponownie za kilka dni.</p>{{end}}
+  {{else}}<p class="verdict">Diagnoza nie ma progu. Moduły z błędem przerób szczególnie uważnie.</p>{{end}}
+  {{if $r.Unanswered}}<p class="muted">Bez odpowiedzi: {{$r.Unanswered}} (liczone jako błędne).</p>{{end}}
+  <p class="muted small">Wynik zapisano{{with .Rec}} ({{datetime .Finished}}){{end}}. Treść odpowiedzi nie jest przechowywana.</p>
+  {{with .Rec}}{{if .CertID}}<p><a class="btn btn-primary" href="/zaswiadczenie/{{.CertID}}.pdf">Pobierz zaświadczenie uczestnictwa (PDF)</a></p>
+  {{else if and $r.IsFinal $.CertNeedPass}}<p class="muted small">Zaświadczenie uczestnictwa otrzymasz po osiągnięciu co najmniej {{$r.Threshold}} z {{$r.Total}}.</p>{{end}}{{end}}
+ </div>
+</section>
+
+{{if $r.Critical}}
+<section class="alert" role="alert">
+ <h2>Błąd w pytaniu KLUCZOWYM – powtórz moduł</h2>
+ <ul>{{range $r.Critical}}<li><strong>{{.Code}}. {{.Title}}</strong> – slajdy {{.FirstSlide}}–{{.LastSlide}}</li>{{end}}</ul>
+</section>
+{{end}}
+
+<section class="panel">
+ <h2>Wynik według modułów</h2>
+ <ul class="mods">
+ {{range $r.Rows}}
+  <li>
+   <span class="mname">{{.Module.Code}}. {{.Module.Title}}</span>
+   <svg class="mbar" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><rect width="200" height="10" rx="5" class="track"/><rect width="{{bar .Correct .Total}}" height="10" rx="5" class="{{if .Review}}fill-warn{{else}}fill{{end}}"/></svg>
+   <span class="mscore">{{.Correct}}/{{.Total}}</span>
+   <span class="mnext">{{if .Critical}}<strong>Powtórz moduł · KLUCZOWE</strong> · s. {{.Module.FirstSlide}}–{{.Module.LastSlide}}{{else if .Review}}Powtórz: s. {{.Module.FirstSlide}}–{{.Module.LastSlide}}{{else}}✓ bez błędów{{end}}</span>
+  </li>
+ {{end}}
+ </ul>
+ <div class="actions noprint">
+  <button class="btn btn-primary" type="button" id="drukuj">Drukuj lub zapisz (PDF)</button>
+  <form method="post" action="/start/{{$r.Part.ID}}"><input type="hidden" name="csrf" value="{{$.CSRF}}"><button class="btn btn-ghost" type="submit">Rozwiąż ponownie</button></form>
+  <a class="btn btn-quiet" href="/">Strona startowa</a>
+ </div>
+</section>
+
+<h2 class="section-title">Omówienie odpowiedzi</h2>
+<p class="muted noprint">Pytania z błędem są rozwinięte. Kliknij nagłówek, aby zwinąć lub rozwinąć.</p>
+{{range $i, $it := $r.Items}}
+<details class="ans {{if $it.Correct}}good{{else}}bad{{end}}"{{if not $it.Correct}} open{{end}}>
+ <summary>
+  <span class="ans-mark" aria-hidden="true">{{if $it.Correct}}✓{{else}}✗{{end}}</span>
+  <span class="ans-title">Pytanie {{add $i 1}} · {{$it.Q.Module}}{{if $it.Q.Critical}} <span class="chip chip-key">KLUCZOWE</span>{{end}}</span>
+  <span class="ans-status">{{if $it.Correct}}poprawnie{{else if $it.Given}}Twoja: {{$it.Given}} · najlepsza: {{$it.Q.Key}}{{else}}brak odpowiedzi · najlepsza: {{$it.Q.Key}}{{end}}</span>
+ </summary>
+ <p class="stem">{{$it.Q.Stem}}</p>
+ <ul class="opts">
+ {{range $it.Options}}<li class="{{if .IsKey}}key{{end}}{{if and .IsGiven (not .IsKey)}} wrong{{end}}">
+  <span class="badge" aria-hidden="true">{{.Letter}}</span>
+  <span><strong>{{.Text}}</strong>{{if .IsKey}} <span class="pill pill-ok">najlepsza odpowiedź</span>{{end}}{{if .IsGiven}} <span class="pill">Twój wybór</span>{{end}}<br>{{.Why}}</span>
+ </li>{{end}}
+ </ul>
+ <p class="muted small">Do powtórki: {{$it.Q.Module}}, slajd {{$it.Q.ReviewSlide}} – {{$it.Q.ReviewTitle}}</p>
+</details>
+{{end}}
+{{template "foot" .}}

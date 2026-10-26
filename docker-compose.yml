@@ -1,0 +1,19 @@
+# Uruchomienie:  cp .env.przyklad .env  → uzupełnij  →  docker compose up -d --build
+# Aplikacja nasłuchuje tylko na 127.0.0.1:8080 – TLS i publiczny adres zapewnia serwer pośredniczący
+# (nginx, Traefik, Caddy, Azure Application Gateway). BASE_URL = adres publiczny https.
+services:
+  test:
+    build: .
+    image: cyberbezpieczenstwo-test:1.3
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - wyniki:/data
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+volumes:
+  wyniki:

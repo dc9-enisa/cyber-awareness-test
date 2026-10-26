@@ -1,0 +1,13 @@
+{{template "head" .}}
+<section class="panel">
+ <h1>Logowanie testowe</h1>
+ <p>Tryb DEV_LOGIN zastępuje Microsoft Entra na potrzeby pokazu na tym komputerze. Wpisz dowolne dane.</p>
+ <form method="post" action="/auth/login" class="form">
+  <input type="hidden" name="wroc" value="{{.Return}}">
+  <label>Imię i nazwisko <input name="name" required autocomplete="off"></label>
+  <label>Login (e-mail) <input name="upn" type="email" required autocomplete="off"></label>
+  <label class="check"><input type="checkbox" name="admin" value="1"> Rola administratora (raport wyników)</label>
+  <button class="btn btn-primary" type="submit">Zaloguj</button>
+ </form>
+</section>
+{{template "foot" .}}

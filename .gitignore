@@ -1,0 +1,7 @@
+.env
+*.env
+!.env.przyklad
+dane/
+pytania/
+/web-app
+*.test

@@ -1,0 +1,49 @@
+{{template "head" .}}
+{{$r := .R}}
+<div class="qhead">
+ <p class="eyebrow">Administrator</p>
+ <h1>Raport wyników</h1>
+</div>
+<ul class="kpis">
+ <li><strong>{{$r.Participants}}</strong> uczestników</li>
+ <li><strong>{{$r.DiagDone}}</strong> po diagnozie</li>
+ <li><strong>{{$r.FinalDone}}</strong> po teście końcowym</li>
+ <li><strong>{{$r.Passed}}</strong> zaliczyło{{if $r.FinalDone}} ({{pct $r.Passed $r.FinalDone}}%){{end}}</li>
+</ul>
+
+<section class="panel">
+ <h2>Moduły – odsetek poprawnych odpowiedzi</h2>
+ <p class="muted small">Wszystkie oddane próby. Niski wynik w teście końcowym wskazuje temat do powtórzenia w organizacji.</p>
+ <div class="table-wrap"><table class="data">
+  <thead><tr><th scope="col">Moduł</th><th scope="col">Diagnoza</th><th scope="col">Test końcowy</th><th scope="col">Próby z błędem KLUCZOWYM</th></tr></thead>
+  <tbody>{{range $r.Modules}}<tr>
+   <th scope="row" data-label="Moduł">{{.Code}}. {{.Title}}</th>
+   <td data-label="Diagnoza">{{if .HasDiag}}{{.DiagPct}}%{{else}}–{{end}}</td>
+   <td data-label="Test końcowy">{{if .HasFinal}}{{.FinalPct}}%{{else}}–{{end}}</td>
+   <td data-label="Błąd KLUCZOWY">{{.CriticalMiss}}</td>
+  </tr>{{end}}</tbody>
+ </table></div>
+</section>
+
+<section class="panel">
+ <h2>Uczestnicy</h2>
+ <form method="get" action="/admin" class="form inline">
+  <label>Szukaj <input name="szukaj" value="{{.Q}}" placeholder="imię, nazwisko lub login"></label>
+  <button class="btn btn-ghost" type="submit">Filtruj</button>
+  <a class="btn btn-primary" href="/admin/wyniki.csv">Eksport CSV (wszystkie próby)</a>
+ </form>
+ {{if $r.People}}
+ <div class="table-wrap"><table class="data">
+  <thead><tr><th scope="col">Uczestnik</th><th scope="col">Diagnoza</th><th scope="col">Najlepszy test końcowy</th><th scope="col">Próby</th><th scope="col">Zaświadczenie</th></tr></thead>
+  <tbody>{{range $r.People}}<tr>
+   <th scope="row" data-label="Uczestnik">{{.Name}}<br><span class="muted small">{{.UPN}}</span></th>
+   <td data-label="Diagnoza">{{with .Diag}}{{.Correct}} z {{.Total}}<br><span class="muted small">{{date .Finished}}</span>{{else}}–{{end}}</td>
+   <td data-label="Test końcowy">{{with .Final}}{{.Correct}} z {{.Total}} · {{if .Passed}}<strong class="ok">zaliczony</strong>{{else}}niezaliczony{{end}}<br><span class="muted small">{{date .Finished}}</span>{{else}}–{{end}}</td>
+   <td data-label="Próby">{{.FinalTries}}</td>
+   <td data-label="Zaświadczenie">{{with .Final}}{{with .CertID}}<a href="/zaswiadczenie/{{.}}.pdf">{{.}}</a>{{else}}–{{end}}{{else}}–{{end}}</td>
+  </tr>{{end}}</tbody>
+ </table></div>
+ {{else}}<p>Brak wyników{{if .Q}} dla „{{.Q}}”{{end}}.</p>{{end}}
+ <p class="muted small">{{if .Retention}}Wyniki starsze niż {{.Retention}} dni są usuwane automatycznie.{{else}}Automatyczne usuwanie wyników jest wyłączone.{{end}}</p>
+</section>
+{{template "foot" .}}

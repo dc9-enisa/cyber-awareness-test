@@ -1,0 +1,25 @@
+{{template "head" .}}
+<div class="qhead">
+ <p class="eyebrow">Część {{.Part.ID}} · {{.Part.Title}}</p>
+ <h1>Zanim oddasz test</h1>
+</div>
+<section class="panel">
+ <p class="big"><strong>{{.Answered}}</strong> z {{.Total}} pytań ma odpowiedź.</p>
+ {{if .Missing}}
+ <div class="alert" role="alert">
+  <p><strong>Brak odpowiedzi: {{len .Missing}}.</strong> Pytanie bez odpowiedzi liczy się jako błędne.</p>
+  <p class="links">{{range .Missing}}<a class="dot" href="/proba/{{$.A.ID}}/{{.}}">{{.}}</a>{{end}}</p>
+ </div>
+ {{else}}
+ <p class="okline">✓ Wszystkie pytania mają odpowiedź.</p>
+ {{end}}
+ <p>Po oddaniu testu nie można już zmieniać odpowiedzi. Zobaczysz wynik i omówienie każdego pytania.</p>
+ <div class="qnav">
+  <a class="btn btn-ghost" href="/proba/{{.A.ID}}/1"><span aria-hidden="true">←</span> Wróć do pytań</a>
+  <form method="post" action="/proba/{{.A.ID}}/oddaj"><input type="hidden" name="csrf" value="{{.CSRF}}"><button class="btn btn-primary" type="submit">Oddaj i zobacz wynik</button></form>
+ </div>
+</section>
+<nav class="dots center" aria-label="Pytania">
+{{range .Nav}}<a href="/proba/{{$.A.ID}}/{{.N}}" class="dot{{if .Answered}} done{{end}}" aria-label="Pytanie {{.N}}{{if .Answered}}, odpowiedziano{{else}}, bez odpowiedzi{{end}}">{{.N}}</a>{{end}}
+</nav>
+{{template "foot" .}}

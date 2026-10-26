@@ -1,0 +1,13 @@
+{{template "head" .}}
+<section class="hero">
+ <p class="eyebrow">Test do kursu · {{len .Bank.Modules}} modułów</p>
+ <h1>Sprawdź, jak decydujesz w codziennej pracy</h1>
+ <p class="lead">Diagnoza wstępna i test końcowy do kursu „Cyberbezpieczeństwo w codziennej pracy”. Zaloguj się kontem służbowym {{.Org}}.</p>
+ <p><a class="btn btn-primary" href="/auth/login">Zaloguj się kontem służbowym <span aria-hidden="true">→</span></a></p>
+</section>
+<ul class="features">
+ <li><strong>Pytanie po pytaniu.</strong> Możesz wracać i zmieniać odpowiedzi do chwili oddania testu.</li>
+ <li><strong>Omówienie na końcu.</strong> Każda odpowiedź z uzasadnieniem i numerem slajdu do powtórki.</li>
+ <li><strong>Zaświadczenie uczestnictwa</strong> do pobrania po zaliczeniu testu końcowego (co najmniej {{.Bank.Threshold}} pkt).</li>
+</ul>
+{{template "foot" .}}

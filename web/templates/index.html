@@ -1,0 +1,49 @@
+{{template "head" .}}
+<section class="hero">
+ <p class="eyebrow">Test do kursu · {{len .Bank.Modules}} modułów</p>
+ <h1>Dzień dobry{{with .S.Name}}, {{.}}{{end}}</h1>
+ <p class="lead">Krótkie sytuacje z pracy biurowej. Przy każdym pytaniu wybierz jedną najlepszą odpowiedź. Po zaliczeniu testu końcowego pobierzesz zaświadczenie uczestnictwa.</p>
+</section>
+
+{{with .Cert}}
+<section class="panel cert-box">
+ <h2>Twoje zaświadczenie uczestnictwa</h2>
+ <p>Test końcowy z {{date .Finished}}: <strong>{{.Correct}} z {{.Total}}</strong>. Numer: <span class="mono">{{.CertID}}</span>.</p>
+ <a class="btn btn-primary" href="/zaswiadczenie/{{.CertID}}.pdf">Pobierz zaświadczenie (PDF)</a>
+</section>
+{{end}}
+
+<div class="parts">
+{{range .Bank.Parts}}
+ <article class="part">
+  <div class="part-icon" aria-hidden="true">{{if eq .ID "A"}}<svg viewBox="0 0 24 24" width="30" height="30"><path fill="currentColor" d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>{{else}}<svg viewBox="0 0 24 24" width="30" height="30"><path fill="currentColor" d="M5 3h14v2h-1v3a6 6 0 0 1-3 5.2V14a6 6 0 0 1 3 5.2V21H6v-1.8A6 6 0 0 1 9 14v-.8A6 6 0 0 1 6 8V5H5V3zm3 2v3a4 4 0 0 0 8 0V5H8z"/></svg>{{end}}</div>
+  <p class="part-label">Część {{.ID}}</p>
+  <h2>{{.Title}}</h2>
+  <ul class="chips"><li>{{len .Questions}} pytań</li><li>ok. {{.Minutes}} min</li><li>{{.When}}</li></ul>
+  <p>{{if eq .ID "A"}}Pokaże, którym modułom kursu warto poświęcić więcej uwagi. Bez progu zaliczenia.{{else}}Sprawdza wszystkie moduły. Zaliczenie: co najmniej {{$.Bank.Threshold}} z {{len .Questions}}.{{end}}</p>
+  <form method="post" action="/start/{{.ID}}"><input type="hidden" name="csrf" value="{{$.CSRF}}"><button class="btn btn-primary btn-wide" type="submit">Rozpocznij część {{.ID}} <span aria-hidden="true">→</span></button></form>
+ </article>
+{{end}}
+</div>
+
+{{if .History}}
+<section class="panel">
+ <h2>Twoje wyniki</h2>
+ <div class="table-wrap"><table class="data">
+  <thead><tr><th scope="col">Data</th><th scope="col">Część</th><th scope="col">Wynik</th><th scope="col">Zaświadczenie</th></tr></thead>
+  <tbody>{{range .History}}<tr>
+   <td data-label="Data">{{datetime .Finished}}</td>
+   <td data-label="Część">{{if eq .Part "B"}}Test końcowy{{else}}Diagnoza wstępna{{end}}</td>
+   <td data-label="Wynik">{{.Correct}} z {{.Total}}{{if eq .Part "B"}} · {{if .Passed}}zaliczony{{else}}niezaliczony{{end}}{{end}}</td>
+   <td data-label="Zaświadczenie">{{with .CertID}}<a href="/zaswiadczenie/{{.}}.pdf">PDF</a>{{else}}–{{end}}</td>
+  </tr>{{end}}</tbody>
+ </table></div>
+</section>
+{{end}}
+
+<ul class="features">
+ <li><strong>Pytanie po pytaniu.</strong> Możesz wracać i zmieniać odpowiedzi.</li>
+ <li><strong>Omówienie na końcu.</strong> Każda odpowiedź z uzasadnieniem i numerem slajdu do powtórki.</li>
+ <li><strong>Pytania KLUCZOWE</strong> (hasła i kody, płatności, zgłaszanie): błąd oznacza powtórkę modułu niezależnie od wyniku.</li>
+</ul>
+{{template "foot" .}}
