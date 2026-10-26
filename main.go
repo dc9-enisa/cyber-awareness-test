@@ -46,6 +46,8 @@ type App struct {
 	oidc     *OIDC // nil w trybie DEV_LOGIN
 	signer   Signer
 	fonts    *certFonts
+	limits   *limits
+	revoked  *Revoked
 }
 
 var funcs = template.FuncMap{
@@ -98,7 +100,7 @@ func main() {
 		log.Fatalf("start: %v", err)
 	}
 	srv := &http.Server{Addr: cfg.Listen, Handler: app.Handler(), ReadHeaderTimeout: 10 * time.Second,
-		ReadTimeout: 30 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 120 * time.Second}
+		ReadTimeout: 30 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 120 * time.Second, MaxHeaderBytes: 16 << 10}
 
 	go app.retentionLoop()
 	go func() {
@@ -119,7 +121,8 @@ func main() {
 }
 
 func NewApp(cfg *Config) (*App, error) {
-	a := &App{cfg: cfg, signer: Signer{cfg.SessionKey}, attempts: NewStore(5000, 12*time.Hour)}
+	a := &App{cfg: cfg, signer: Signer{cfg.SessionKey}, attempts: NewStore(5000, 12*time.Hour),
+		limits: newLimits(), revoked: &Revoked{ids: map[string]int64{}}}
 	var err error
 	raw := questionsJSON
 	if cfg.Questions != "" {
@@ -161,7 +164,7 @@ func (a *App) retentionLoop() {
 func (a *App) Handler() http.Handler {
 	mux := http.NewServeMux()
 	static, _ := fs.Sub(staticFS, "web/static")
-	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(static)))
+	mux.Handle("GET /static/", http.StripPrefix("/static/", noListing(http.FileServerFS(static))))
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("ok")) })
 	mux.HandleFunc("GET /{$}", a.handleIndex)
 	mux.HandleFunc("GET /prywatnosc", a.handlePrivacy)
@@ -183,32 +186,7 @@ func (a *App) Handler() http.Handler {
 
 	mux.HandleFunc("GET /admin", a.admin(a.handleAdmin))
 	mux.HandleFunc("GET /admin/wyniki.csv", a.admin(a.handleCSV))
-	return a.securityHeaders(mux)
-}
-
-func (a *App) securityHeaders(h http.Handler) http.Handler {
-	origin := a.cfg.BaseURL
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		hd := w.Header()
-		hd.Set("Content-Security-Policy", "default-src 'self'; form-action 'self' https://login.microsoftonline.com; frame-ancestors 'none'; base-uri 'none'; object-src 'none'")
-		hd.Set("X-Content-Type-Options", "nosniff")
-		// same-origin, nie no-referrer: przy no-referrer Chrome wysyła w formularzach „Origin: null”,
-		// a sprawdzenie źródła poniżej odrzuciłoby każde własne żądanie POST
-		hd.Set("Referrer-Policy", "same-origin")
-		hd.Set("Cache-Control", "no-store")
-		hd.Set("X-Frame-Options", "DENY")
-		if a.cfg.Secure() {
-			hd.Set("Strict-Transport-Security", "max-age=31536000")
-		}
-		// CSRF, warstwa 1: żądania zmieniające stan tylko z własnego źródła (nagłówek Origin, gdy jest).
-		if r.Method == http.MethodPost {
-			if o := r.Header.Get("Origin"); o != "" && o != origin {
-				http.Error(w, "Niedozwolone źródło żądania", http.StatusForbidden)
-				return
-			}
-		}
-		h.ServeHTTP(w, r)
-	})
+	return a.securityHeaders(a.rateLimit(mux))
 }
 
 type userHandler func(http.ResponseWriter, *http.Request, *Session)
@@ -226,6 +204,7 @@ func (a *App) user(h userHandler) http.HandlerFunc {
 			return
 		}
 		if r.Method == http.MethodPost && subtle.ConstantTimeCompare([]byte(r.PostFormValue("csrf")), []byte(s.CSRF)) != 1 {
+			a.audit(r, "csrf_zly_token", "oid", s.OID)
 			http.Error(w, "Sesja formularza wygasła. Wróć i spróbuj ponownie.", http.StatusForbidden)
 			return
 		}
@@ -236,6 +215,7 @@ func (a *App) user(h userHandler) http.HandlerFunc {
 func (a *App) admin(h userHandler) http.HandlerFunc {
 	return a.user(func(w http.ResponseWriter, r *http.Request, s *Session) {
 		if !s.Admin {
+			a.audit(r, "odmowa_raportu", "oid", s.OID, "login", s.UPN)
 			a.render(w, r, s, http.StatusForbidden, "forbidden.html", map[string]any{"Title": "Brak dostępu"})
 			return
 		}
@@ -283,7 +263,7 @@ func (a *App) handleLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Błąd serwera", http.StatusInternalServerError)
 		return
 	}
-	a.setCookie(w, loginCookie, v, loginTTL)
+	a.setCookie(w, a.cookieName(loginCookie), v, loginTTL)
 	http.Redirect(w, r, a.oidc.AuthURL(st.State, st.Nonce, st.Verifier), http.StatusFound)
 }
 
@@ -296,14 +276,15 @@ func (a *App) handleCallback(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("logowanie: %s: %v", msg, err)
 		}
+		a.audit(r, "logowanie_nieudane", "powod", msg)
 		a.render(w, r, nil, http.StatusUnauthorized, "loginerror.html", map[string]any{"Title": "Logowanie nieudane", "Msg": msg})
 	}
-	c, err := r.Cookie(loginCookie)
+	c, err := r.Cookie(a.cookieName(loginCookie))
 	if err != nil {
 		fail("Sesja logowania wygasła. Zaloguj się ponownie.", nil)
 		return
 	}
-	a.clearCookie(w, loginCookie)
+	a.clearCookie(w, a.cookieName(loginCookie))
 	var st struct {
 		loginState
 		Return string `json:"r"`
@@ -336,6 +317,7 @@ func (a *App) handleCallback(w http.ResponseWriter, r *http.Request) {
 		fail("Błąd serwera.", err)
 		return
 	}
+	a.audit(r, "logowanie", "oid", s.OID, "login", s.UPN, "admin", s.Admin)
 	http.Redirect(w, r, safeReturn(st.Return), http.StatusSeeOther)
 }
 
@@ -352,6 +334,7 @@ func (a *App) handleDevLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s := Session{OID: "dev-" + upn, Name: name, UPN: upn, Admin: r.PostFormValue("admin") == "1"}
+	a.audit(r, "logowanie_testowe", "login", upn, "admin", s.Admin)
 	if err := a.startSession(w, s); err != nil {
 		http.Error(w, "Błąd serwera", http.StatusInternalServerError)
 		return
@@ -365,7 +348,11 @@ func (a *App) handleLogout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Błędny token formularza", http.StatusForbidden)
 		return
 	}
-	a.clearCookie(w, sessionCookie)
+	if s != nil {
+		a.revoked.Add(s.ID, s.Exp)
+		a.audit(r, "wylogowanie", "oid", s.OID)
+	}
+	a.clearCookie(w, a.cookieName(sessionCookie))
 	if a.oidc != nil {
 		http.Redirect(w, r, a.oidc.LogoutURL(), http.StatusSeeOther)
 		return
@@ -582,6 +569,9 @@ func (a *App) handleCertificate(w http.ResponseWriter, r *http.Request, s *Sessi
 	if rec == nil || (rec.OID != s.OID && !s.Admin) {
 		http.NotFound(w, r)
 		return
+	}
+	if rec.OID != s.OID {
+		a.audit(r, "zaswiadczenie_innej_osoby", "oid", s.OID, "numer", rec.CertID)
 	}
 	pdf, err := a.CertificatePDF(rec)
 	if err != nil {

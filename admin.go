@@ -109,6 +109,7 @@ func (a *App) buildReport(q string) Report {
 
 func (a *App) handleAdmin(w http.ResponseWriter, r *http.Request, s *Session) {
 	q := r.URL.Query().Get("szukaj")
+	a.audit(r, "raport", "oid", s.OID)
 	a.render(w, r, s, http.StatusOK, "admin.html", map[string]any{"Title": "Raport wyników", "R": a.buildReport(q), "Q": q,
 		"Retention": a.cfg.Retention})
 }
@@ -124,6 +125,7 @@ func csvCell(s string) string {
 // handleCSV – wszystkie oddane próby; UTF-8 z BOM i średnik jako separator (Excel w polskich ustawieniach).
 // Wyniki modułów jako „3 z 3”, bo „3/3” Excel zamienia na datę.
 func (a *App) handleCSV(w http.ResponseWriter, r *http.Request, s *Session) {
+	a.audit(r, "eksport_csv", "oid", s.OID)
 	w.Header().Set("Content-Type", "text/csv; charset=utf-8")
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="wyniki_%s.csv"`, time.Now().In(warsaw).Format("2006-01-02")))
 	w.Write([]byte("\xEF\xBB\xBF"))

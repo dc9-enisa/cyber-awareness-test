@@ -29,6 +29,8 @@ type Config struct {
 	CertNeedPass bool   // zaświadczenie tylko po osiągnięciu progu testu końcowego
 	DevLogin     bool   // logowanie testowe bez Entra – wyłącznie na localhost
 	Questions    string // plik banku pytań zamiast wbudowanego data/questions.json
+	// nagłówek z adresem klienta ustawiany przez serwer pośredniczący (np. CF-Connecting-IP); pusty = adres połączenia
+	ClientIPHeader string
 }
 
 func env(k, def string) string {
@@ -40,20 +42,21 @@ func env(k, def string) string {
 
 func LoadConfig() (*Config, error) {
 	c := &Config{
-		Listen:       env("LISTEN", ":8080"),
-		BaseURL:      strings.TrimRight(env("BASE_URL", "http://localhost:8080"), "/"),
-		Authority:    strings.TrimRight(env("ENTRA_AUTHORITY", "https://login.microsoftonline.com"), "/"),
-		TenantID:     env("ENTRA_TENANT_ID", ""),
-		ClientID:     env("ENTRA_CLIENT_ID", ""),
-		ClientSecret: os.Getenv("ENTRA_CLIENT_SECRET"),
-		DataDir:      env("DATA_DIR", "/data"),
-		AdminRole:    env("ADMIN_ROLE", "Raporty"),
-		AdminUPNs:    map[string]bool{},
-		OrgName:      env("ORG_NAME", ""),
-		PrivacyText:  env("PRIVACY_TEXT", ""),
-		CertNeedPass: env("CERT_REQUIRE_PASS", "1") != "0",
-		DevLogin:     env("DEV_LOGIN", "0") == "1",
-		Questions:    env("QUESTIONS_FILE", ""),
+		Listen:         env("LISTEN", ":8080"),
+		BaseURL:        strings.TrimRight(env("BASE_URL", "http://localhost:8080"), "/"),
+		Authority:      strings.TrimRight(env("ENTRA_AUTHORITY", "https://login.microsoftonline.com"), "/"),
+		TenantID:       env("ENTRA_TENANT_ID", ""),
+		ClientID:       env("ENTRA_CLIENT_ID", ""),
+		ClientSecret:   os.Getenv("ENTRA_CLIENT_SECRET"),
+		DataDir:        env("DATA_DIR", "/data"),
+		AdminRole:      env("ADMIN_ROLE", "Raporty"),
+		AdminUPNs:      map[string]bool{},
+		OrgName:        env("ORG_NAME", ""),
+		PrivacyText:    env("PRIVACY_TEXT", ""),
+		CertNeedPass:   env("CERT_REQUIRE_PASS", "1") != "0",
+		DevLogin:       env("DEV_LOGIN", "0") == "1",
+		Questions:      env("QUESTIONS_FILE", ""),
+		ClientIPHeader: env("CLIENT_IP_HEADER", ""),
 	}
 	for _, u := range strings.Split(env("ADMIN_UPNS", ""), ",") {
 		if u = strings.ToLower(strings.TrimSpace(u)); u != "" {

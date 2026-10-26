@@ -91,6 +91,18 @@ func NewOIDC(cfg *Config) (*OIDC, error) {
 	if o.meta.AuthEndpoint == "" || o.meta.TokenEndpoint == "" || o.meta.JWKSURI == "" || o.meta.Issuer == "" {
 		return nil, errors.New("discovery Entra: niepełne metadane")
 	}
+	// A10 (SSRF): adresy z metadanych muszą wskazywać host ENTRA_AUTHORITY – aplikacja nie łączy się z niczym innym.
+	auth, _ := url.Parse(cfg.Authority)
+	for _, e := range []string{o.meta.AuthEndpoint, o.meta.TokenEndpoint, o.meta.JWKSURI} {
+		if u, err := url.Parse(e); err != nil || u.Scheme != auth.Scheme || u.Host != auth.Host {
+			return nil, fmt.Errorf("discovery Entra: adres %q spoza %s", e, auth.Host)
+		}
+	}
+	if o.meta.EndSession != "" {
+		if u, err := url.Parse(o.meta.EndSession); err != nil || u.Host != auth.Host {
+			o.meta.EndSession = ""
+		}
+	}
 	// Konfiguracja wielodostępna ma w issuer znacznik {tenantid}; aplikacja jest jednodostępna.
 	o.meta.Issuer = strings.ReplaceAll(o.meta.Issuer, "{tenantid}", cfg.TenantID)
 	if err := o.refreshKeys(); err != nil {

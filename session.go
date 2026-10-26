@@ -20,6 +20,7 @@ const (
 
 // Session – zalogowany uczestnik. Przechowywana w podpisanym ciasteczku (bez stanu po stronie serwera).
 type Session struct {
+	ID    string `json:"j"` // identyfikator sesji – unieważnienie przy wylogowaniu
 	OID   string `json:"o"`
 	Name  string `json:"n"`
 	UPN   string `json:"u"`
@@ -66,6 +67,15 @@ func (s Signer) mac(purpose, payload string) string {
 	return base64.RawURLEncoding.EncodeToString(m.Sum(nil))
 }
 
+// cookieName – przy https prefiks __Host- (ciasteczko tylko z Secure, Path=/, bez Domain: nie da się go
+// nadpisać z subdomeny ani przez http).
+func (a *App) cookieName(n string) string {
+	if a.cfg.Secure() {
+		return "__Host-" + n
+	}
+	return n
+}
+
 func (a *App) setCookie(w http.ResponseWriter, name, value string, ttl time.Duration) {
 	http.SetCookie(w, &http.Cookie{
 		Name: name, Value: value, Path: "/", MaxAge: int(ttl.Seconds()),
@@ -79,24 +89,25 @@ func (a *App) clearCookie(w http.ResponseWriter, name string) {
 }
 
 func (a *App) startSession(w http.ResponseWriter, s Session) error {
+	s.ID = randomToken()
 	s.CSRF = randomToken()
 	s.Exp = time.Now().Add(sessionTTL).Unix()
 	v, err := a.signer.Seal("sesja", s)
 	if err != nil {
 		return err
 	}
-	a.setCookie(w, sessionCookie, v, sessionTTL)
+	a.setCookie(w, a.cookieName(sessionCookie), v, sessionTTL)
 	return nil
 }
 
 // session zwraca bieżącą sesję albo nil (brak, zły podpis, wygasła).
 func (a *App) session(r *http.Request) *Session {
-	c, err := r.Cookie(sessionCookie)
+	c, err := r.Cookie(a.cookieName(sessionCookie))
 	if err != nil {
 		return nil
 	}
 	var s Session
-	if a.signer.Open("sesja", c.Value, &s) != nil || time.Now().Unix() > s.Exp || s.OID == "" {
+	if a.signer.Open("sesja", c.Value, &s) != nil || time.Now().Unix() > s.Exp || s.OID == "" || a.revoked.Has(s.ID) {
 		return nil
 	}
 	return &s

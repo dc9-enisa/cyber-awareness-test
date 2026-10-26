@@ -20,7 +20,7 @@ Otwórz http://localhost:8080. Tryb `DEV_LOGIN` działa tylko na localhost i nie
 
 ## Wdrożenie
 
-Rejestracja aplikacji w Entra, konfiguracja, Docker, dane osobowe i ograniczenia: [WDROZENIE.md](WDROZENIE.md).
+Rejestracja aplikacji w Entra, konfiguracja, Docker, dane osobowe i ograniczenia: [WDROZENIE.md](WDROZENIE.md). Instrukcja konfiguracji w PDF (szablon ENISA): [docs/instrukcja_konfiguracji.pdf](docs/instrukcja_konfiguracji.pdf).
 
 ```sh
 cp .env.przyklad .env   # uzupełnij

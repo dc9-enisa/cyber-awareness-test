@@ -19,9 +19,10 @@ Wykonuje administrator dzierżawy w [Microsoft Entra admin center](https://entra
 4. **App roles → Create app role**
    - Display name: `Raport wyników`, Allowed member types: **Users/Groups**
    - Value: `Raporty` (musi być równe `ADMIN_ROLE`)
+   - utwórz drugą rolę: Display name `Uczestnik`, Value `Uczestnik` – do przypisywania uczestników (gdy aplikacja ma role, Entra nie przypisze użytkownika z *Default Access*)
 5. **Token configuration → Add optional claim → ID → email** (opcjonalnie; login bierze się z `preferred_username`).
 6. **API permissions**: wystarczą domyślne uprawnienia delegowane `openid`, `profile`, `email` (Microsoft Graph). W razie potrzeby **Grant admin consent**.
-7. **Enterprise applications → (ta aplikacja) → Properties → Assignment required? = Yes**. Następnie **Users and groups**: przypisz grupę uczestników (rola domyślna) oraz osoby lub grupę administratorów raportu (rola `Raport wyników`). Bez przypisania logowanie zostanie odrzucone przez Entra.
+7. **Enterprise applications → (ta aplikacja) → Properties → Assignment required? = Yes**. Następnie **Users and groups**: przypisz grupę uczestników (rola `Uczestnik`) oraz osoby lub grupę administratorów raportu (rola `Raport wyników`). Bez przypisania logowanie zostanie odrzucone przez Entra.
 8. Z karty **Overview** skopiuj **Directory (tenant) ID** → `ENTRA_TENANT_ID` i **Application (client) ID** → `ENTRA_CLIENT_ID`.
 
 ## 2. Uruchomienie w kontenerze
@@ -64,13 +65,24 @@ Aplikacja jest jednym statycznym plikiem bez zależności zewnętrznych (tylko b
 | `CERT_REQUIRE_PASS` | nie | `1` (domyślnie) – zaświadczenie po zaliczeniu testu końcowego; `0` – po każdym oddanym teście końcowym |
 | `DATA_DIR` | nie | Katalog wyników (w obrazie `/data`) |
 | `LISTEN` | nie | Adres nasłuchu (w obrazie `:8080`) |
+| `CLIENT_IP_HEADER` | zalecana za proxy | Nagłówek z adresem klienta od serwera pośredniczącego, np. `CF-Connecting-IP` (Cloudflare) lub `X-Real-IP`. Używany do limitów żądań i dziennika. Ustaw tylko, gdy port aplikacji jest dostępny wyłącznie dla serwera pośredniczącego |
 | `QUESTIONS_FILE` | nie | Ścieżka do pliku banku pytań (JSON) zamiast wbudowanych pytań przykładowych, np. `/pytania/questions.json` |
 | `DEV_LOGIN` | nie | `1` – logowanie testowe bez Entra. Dozwolone tylko przy `BASE_URL` na localhost; nie do produkcji |
 
 ## 4. Działanie
 
 - **Logowanie:** OpenID Connect, przepływ kodu autoryzacji z PKCE (S256), klient poufny. Aplikacja sprawdza podpis RS256 tokenu kluczami z JWKS Entra (z obsługą rotacji kluczy), wystawcę, odbiorcę, dzierżawę (`tid`), ważność, `nonce` oraz `state`. Sesja to podpisane HMAC-SHA256 ciasteczko `HttpOnly`, `Secure`, `SameSite=Lax`, ważne 8 godzin. Wylogowanie kończy też sesję w Entra.
-- **Ochrona formularzy:** token CSRF w każdym formularzu i sprawdzenie nagłówka `Origin`. Nagłówki: CSP bez skryptów zewnętrznych, `X-Frame-Options: DENY`, HSTS przy https, `Cache-Control: no-store`.
+- **Zabezpieczenia (OWASP Top 10):**
+  - A01: uczestnik widzi tylko swoje próby i zaświadczenia, raport tylko z rolą; wylogowanie unieważnia sesję (ponowne użycie skopiowanego ciasteczka nie działa),
+  - A02: ciasteczka `__Host-`, `Secure`, `HttpOnly`, `SameSite=Lax`, podpis HMAC-SHA256; HSTS 2 lata,
+  - A03: szablony z automatycznym kodowaniem, ochrona przed formułami w CSV, CSP `default-src 'none'` bez `unsafe-inline`,
+  - A04: limity żądań (logowanie 20/min, ogółem 600/min na adres IP), limit treści formularza 64 KB, nagłówków 16 KB, limity czasu,
+  - A05: nagłówki `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener/Resource/Embedder-Policy`, `X-Permitted-Cross-Domain-Policies`, `Cache-Control: no-store`; brak listingu katalogów, tylko zadeklarowane metody HTTP,
+  - A06: tylko biblioteka standardowa Go, obraz distroless; aktualizuj obraz bazowy i sprawdzaj `govulncheck ./...`,
+  - A07: OIDC z PKCE, `nonce`, `state`, weryfikacja podpisu i oświadczeń; limit prób logowania,
+  - A08: bank pytań walidowany przy starcie, obraz budowany z testami,
+  - A09: dziennik zdarzeń bezpieczeństwa w JSON (`"kanal":"bezpieczenstwo"`): logowania udane i nieudane, wylogowania, odmowy dostępu, raport, eksport CSV, pobranie cudzego zaświadczenia przez administratora, błędy CSRF, przekroczenia limitów – bez tokenów i treści odpowiedzi,
+  - A10: połączenia wychodzące tylko do hosta `ENTRA_AUTHORITY`; adresy z metadanych OIDC spoza tego hosta są odrzucane.
 - **Test:** pytanie po pytaniu, powrót i zmiana odpowiedzi do oddania, omówienie po oddaniu – jak w aplikacji offline. Próba w toku jest tylko w pamięci serwera (wygasa po 12 godzinach lub po restarcie). Próbę widzi tylko jej właściciel.
 - **Zaświadczenie uczestnictwa:** PDF A4 poziomo, 2 strony. Strona 1: imię i nazwisko z Entra, data, wynik, numer (`XXXX-XXXX-XXXX-XXXX`, 80 losowych bitów) i adres weryfikacji. Strona 2: zakres szkolenia – moduły i zagadnienia. Na obu stronach w stopce znak ENISA (na białym polu, z łączem do strony agencji) i znak „Finansowane przez Unię Europejską” (nie mniejszy niż znak ENISA). Wydawcą jest organizacja z `ORG_NAME`; zaświadczenie stwierdza, że nie zostało wydane ani poświadczone przez ENISA ani UE – zasady ENISA nie pozwalają, by logo sugerowało certyfikację lub poparcie.
 - **Znaki ENISA i UE** są w stopce każdej strony aplikacji (pochodzenie: `assets/ZRODLO_ZNAKOW.md`).

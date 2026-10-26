@@ -1,6 +1,6 @@
 # Aplikacja webowa testu „Cyberbezpieczeństwo w codziennej pracy” z logowaniem Microsoft Entra ID.
 # Budowa:  docker build -t cyberbezpieczenstwo-test .
-FROM golang:1.23-alpine AS build
+FROM golang:1.25-alpine AS build
 WORKDIR /src
 COPY . .
 RUN CGO_ENABLED=0 go vet ./... \
